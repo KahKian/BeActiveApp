@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "230139319359",
+    "firebase_url": "https://beactivefirebase.firebaseio.com",
+    "project_id": "beactivefirebase",
+    "storage_bucket": "beactivefirebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230139319359:android:40ddd247cb026498",
+        "android_client_info": {
+          "package_name": "com.sp.beactive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "230139319359-rdvf63n9d5f7g4aujgakc3f2atvqfal7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sp.beactive",
+            "certificate_hash": "506d2fdd806b846de33e22301d51ea7be123b93e"
+          }
+        },
+        {
+          "client_id": "230139319359-iinqt5rdfpo9nutd6i253nffjrehl0pm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIyNHPrYwL7UtBm-jdGK53SHFDvpQ2oEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "230139319359-iinqt5rdfpo9nutd6i253nffjrehl0pm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

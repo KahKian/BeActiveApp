@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignIn">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="0dp"
+            android:background="@drawable/sign_in_background">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="92dp"
+                android:layout_marginTop="67dp"
+                android:fontFamily="cursive"
+                android:gravity="center"
+                android:text="Be Active!"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="60sp"
+                android:textStyle="bold|italic"
+                android:typeface="sans" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="152dp"
+                android:layout_height="156dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="129dp"
+                android:layout_marginTop="177dp"
+                android:src="@mipmap/htp"
+                app:civ_border_color="@android:color/black"
+                app:civ_border_width="2dp" />
+
+            <Button
+                android:id="@+id/sign_in_button"
+                android:layout_width="119dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="145dp"
+                android:layout_marginBottom="258dp"
+                android:gravity="center"
+                android:text="Sign In">
+
+            </Button>
+
+            <Button
+                android:id="@+id/sign_out_button"
+                android:layout_width="119dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="145dp"
+                android:layout_marginBottom="200dp"
+                android:gravity="center"
+                android:text="Sign Out">
+
+            </Button>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
