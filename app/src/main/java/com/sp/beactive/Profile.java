@@ -57,15 +57,15 @@ public class Profile extends AppCompatActivity {
         mSave.setOnClickListener(onSave);
         mProfile_Thumbnail= findViewById(R.id.Profile_Thumbnail);
 
-        ref = FirebaseDatabase.getInstance().getReference("users/"+ mAuth.getCurrentUser().getUid());
+        ref = FirebaseDatabase.getInstance().getReference("users/"+ mAuth.getCurrentUser().getUid()+"/profile");
         ValueEventListener mDetailsListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserDetails userDetails = dataSnapshot.getValue(UserDetails.class);
                 assert userDetails!=null;
                 mName2 = findViewById(R.id.Name2);
-                    mName2.setText(userDetails.username);
-                    mAge.setText(userDetails.age);
+                mName2.setText(userDetails.username);
+                mAge.setText(userDetails.age);
             }
 
             @Override
@@ -80,7 +80,6 @@ public class Profile extends AppCompatActivity {
 
         File imgFile = new File(this.sharedPreferences.getString(file,""));
         if(imgFile.exists()){
-
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getPath());
             mProfile_Thumbnail.setImageBitmap(myBitmap);
         }
@@ -90,32 +89,20 @@ public class Profile extends AppCompatActivity {
         @Override
         public void onClick(View v) {
            final Intent intent = new Intent(Profile.this,Home.class);
-            String convertEditText;
-            convertEditText=mName2.getText().toString();
-            String convertEditText2;
-            convertEditText2=mAge.getText().toString();
+            String profile_name;
+            profile_name=mName2.getText().toString();
+            String profile_age;
+            profile_age=mAge.getText().toString();
 
-            updateDetails(mAuth.getCurrentUser().getUid(),convertEditText, convertEditText2);
-
-            new AlertDialog.Builder(Profile.this)
-                    .setTitle("Hey you!")
-                    .setMessage("Are you sure you want to save?")
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            if (whichButton==1) {
-                                startActivity(intent);
-                                finish();
-                            }
-                        }})
-                    .setNegativeButton(android.R.string.no, null).show();
+            updateDetails(profile_name, profile_age);
+            startActivity(intent);
+            finish();
         }
     };
 
-    private void updateDetails(String uid, String name,String age){
+    private void updateDetails(String name,String age){
             UserDetails userDetails=new UserDetails(name,age);
-            ref.child("users").child(uid).setValue(userDetails);
+            ref.setValue(userDetails);
     }
 
 

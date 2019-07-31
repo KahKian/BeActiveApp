@@ -141,7 +141,7 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onStart(){
         super.onStart();
-        ref = FirebaseDatabase.getInstance().getReference("users/"+ mAuth.getCurrentUser().getUid());
+        ref = FirebaseDatabase.getInstance().getReference("users/"+ mAuth.getCurrentUser().getUid()+"/profile");
         ValueEventListener mDetailsListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

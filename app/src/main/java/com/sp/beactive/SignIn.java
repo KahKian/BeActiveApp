@@ -101,7 +101,7 @@ public class SignIn extends AppCompatActivity {
                         {
 
                             UserDetails userDetails = new UserDetails();
-                            ref.setValue(userDetails);
+                            ref.child("profile").setValue(userDetails);
                             Toast.makeText(SignIn.this,"create new",Toast.LENGTH_LONG).show();
                             startActivity(intent);
                             finish();
