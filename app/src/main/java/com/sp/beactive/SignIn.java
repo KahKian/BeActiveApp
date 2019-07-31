@@ -36,6 +36,7 @@ public class SignIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_main);
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         ref=FirebaseDatabase.getInstance().getReference();
 
         mSignIn= findViewById(R.id.sign_in_button);
