@@ -37,7 +37,6 @@ public class SignIn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_main);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         ref=FirebaseDatabase.getInstance().getReference();
 
@@ -89,6 +88,7 @@ public class SignIn extends AppCompatActivity {
                 final Intent intent = new Intent(this, Home.class);
                 assert user.getUid() !=null;
                 ref = FirebaseDatabase.getInstance().getReference("users/"+user.getUid());
+
                 final ValueEventListener mDetailsListener = new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
