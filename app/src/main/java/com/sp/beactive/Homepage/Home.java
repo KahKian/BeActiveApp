@@ -1,4 +1,4 @@
-package com.sp.beactive;
+package com.sp.beactive.Homepage;
 
 import android.Manifest;
 import android.content.Context;
@@ -11,7 +11,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,6 +37,10 @@ import com.karumi.dexter.listener.DexterError;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.sp.beactive.R;
+import com.sp.beactive.SignIn;
+import com.sp.beactive.Helpers.UserDetails;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -124,7 +127,7 @@ public class Home extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
                         switch (item.getItemId()){
                             case R.id.sign_out:
-                                Intent intent = new Intent(getApplicationContext(),SignIn.class);
+                                Intent intent = new Intent(getApplicationContext(), SignIn.class);
                                 startActivity(intent);
                                 return true;
                             default:
@@ -352,7 +355,7 @@ public class Home extends AppCompatActivity {
     private View.OnClickListener onMap = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(getApplicationContext(), Map.class);
+            Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
             startActivity(intent);
             finish();
 

@@ -1,8 +1,7 @@
-package com.sp.beactive;
+package com.sp.beactive.Homepage;
 
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.sp.beactive.Helpers.GoalsHelper;
+import com.sp.beactive.R;
 
 import java.util.ArrayList;
 
@@ -43,7 +45,7 @@ public class Goals extends AppCompatActivity implements View.OnClickListener, Ad
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(this,Home.class);
+        Intent intent = new Intent(this, Home.class);
         startActivity(intent);
         finish();
     }

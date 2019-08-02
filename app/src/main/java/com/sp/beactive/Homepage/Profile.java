@@ -1,14 +1,12 @@
-package com.sp.beactive;
+package com.sp.beactive.Homepage;
 
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +23,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.sp.beactive.R;
+import com.sp.beactive.Helpers.UserDetails;
 
 import java.io.File;
 
@@ -88,7 +88,7 @@ public class Profile extends AppCompatActivity {
     public View.OnClickListener onSave = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-           final Intent intent = new Intent(Profile.this,Home.class);
+           final Intent intent = new Intent(Profile.this, Home.class);
             String profile_name;
             profile_name=mName2.getText().toString();
             String profile_age;
