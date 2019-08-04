@@ -21,6 +21,8 @@ import com.sp.beactive.R;
 
 import org.w3c.dom.Text;
 
+import java.util.Objects;
+
 public class Community extends AppCompatActivity {
     private DatabaseReference ref;
     private FirebaseListAdapter<ChatMessage> adapter;
@@ -42,7 +44,7 @@ public class Community extends AppCompatActivity {
             public void onClick(View v) {
                 EditText input = findViewById(R.id.input);
                 ref.push().setValue(new ChatMessage(input.getText().toString(),
-                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
+                        Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getDisplayName()));
                 input.setText("");
                 //scrollBottom();
 
