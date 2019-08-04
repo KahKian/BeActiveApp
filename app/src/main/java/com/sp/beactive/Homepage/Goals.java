@@ -36,7 +36,7 @@ public class Goals extends AppCompatActivity implements View.OnClickListener, Ad
 
         items = GoalsHelper.readData(this);
 
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        adapter = new ArrayAdapter<String>(this, R.layout.listofgoals,R.id.goals_text, items);
         list.setAdapter(adapter);
         btnAddGoals.setOnClickListener(this);
         list.setOnItemClickListener(this);

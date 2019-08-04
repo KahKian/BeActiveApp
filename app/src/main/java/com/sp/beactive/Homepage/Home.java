@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 
 import androidx.appcompat.app.AlertDialog;
@@ -37,13 +39,17 @@ import com.karumi.dexter.listener.DexterError;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.sp.beactive.Helpers.GPSHelper;
 import com.sp.beactive.R;
+import com.sp.beactive.Services.GPSTracker;
 import com.sp.beactive.SignIn;
 import com.sp.beactive.Helpers.UserDetails;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -60,6 +66,11 @@ public class Home extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     public static final String mypreferences = "mypref";
     public static final String file = "fileKey";
+    private static final String IMAGE_DIRECTORY = "/beactive";
+
+    private GPSTracker gpsTracker;
+    private double latitude = 0.0d;
+    private double longitude = 0.0d;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,15 +81,27 @@ public class Home extends AppCompatActivity {
 
         Button buttonProfile;
         Button buttonLearning;
-        Button buttonHealth;
         Button buttonGoals;
         Button buttonCommunity;
         Button buttonMap;
         Button mSetThumbnail;
         ImageButton btn;
+        Button testgps;
+        testgps = findViewById(R.id.testgps);
+        testgps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                latitude=gpsTracker.getLatitude();
+                longitude=gpsTracker.getLongitude();
+                updateLocation(latitude,longitude);
+                Toast.makeText(getApplicationContext(),"Your Location is - \nLat: "+latitude+ "\nLong: " +longitude, Toast.LENGTH_LONG).show();
+            }
+        });
 
         ref=FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        gpsTracker = new GPSTracker(Home.this);
+
 
 
         sharedPreferences = getSharedPreferences(mypreferences, Context.MODE_PRIVATE);
@@ -93,7 +116,6 @@ public class Home extends AppCompatActivity {
         mName = findViewById(R.id.Name);
         buttonProfile = findViewById(R.id.buttonProfile);
         buttonLearning = findViewById(R.id.buttonLearning);
-        buttonHealth = findViewById(R.id.buttonHealth);
         buttonGoals = findViewById(R.id.buttonGoals);
         buttonCommunity = findViewById(R.id.buttonCommunity);
         buttonMap = findViewById(R.id.buttonMap);
@@ -102,12 +124,12 @@ public class Home extends AppCompatActivity {
 
         buttonProfile.setOnClickListener(onProfile);
         buttonLearning.setOnClickListener(onLearning);
-        buttonHealth.setOnClickListener(onHealth);
         buttonGoals.setOnClickListener(onGoals);
         buttonCommunity.setOnClickListener(onCommunity);
         buttonMap.setOnClickListener(onMap);
 
         requestMultiplePermissions();
+
 
         mSetThumbnail.setOnClickListener(  new View.OnClickListener() {
             @Override
@@ -115,7 +137,6 @@ public class Home extends AppCompatActivity {
                 showPictureDialog();
             }
         });
-
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -219,7 +240,7 @@ public class Home extends AppCompatActivity {
                 Uri contentURI = data.getData();
                 try{
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                    saveToInternalStorage(bitmap);
+                    saveToTemp(bitmap);
                     Toast.makeText(Home.this, "Image Saved!", Toast.LENGTH_SHORT).show();
                     mThumbnail.setImageBitmap(bitmap);
                 } catch (IOException e){
@@ -230,19 +251,47 @@ public class Home extends AppCompatActivity {
         } else if (requestCode == CAMERA){
             Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
             mThumbnail.setImageBitmap(imageBitmap);
-            saveToInternalStorage(imageBitmap);
+            saveToTemp(imageBitmap);
+            saveImage(imageBitmap);
             Toast.makeText(Home.this, "Image Saved!", Toast.LENGTH_SHORT).show();
 
         }
     }
 
-    private String saveToInternalStorage(Bitmap bitmapImage){
+    public String saveImage(Bitmap myBitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        myBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        File wallpaperDirectory = new File(
+                Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
+        // have the object build the directory structure, if needed.
+        if (!wallpaperDirectory.exists()) {
+            wallpaperDirectory.mkdirs();
+        }
+
+        try {
+            File f = new File(wallpaperDirectory, Calendar.getInstance()
+                    .getTimeInMillis() + ".jpg");
+            f.createNewFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+            MediaScannerConnection.scanFile(this,
+                    new String[]{f.getPath()},
+                    new String[]{"image/jpeg"}, null);
+            fo.close();
+            Log.d("TAG", "File Saved::--->" + f.getAbsolutePath());
+
+            return f.getAbsolutePath();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return "";
+    }
+
+    private String saveToTemp(Bitmap bitmapImage){
         ContextWrapper cw = new ContextWrapper(getApplicationContext());
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
         // Create imageDir
         File mypath=new File(directory,"profile.jpg");
-
-
 
         FileOutputStream fos = null;
         try {
@@ -270,6 +319,8 @@ public class Home extends AppCompatActivity {
         }
         return directory.getAbsolutePath();
     }
+
+
 
     private void  requestMultiplePermissions(){
         Dexter.withActivity(this)
@@ -328,15 +379,7 @@ public class Home extends AppCompatActivity {
 
         }
     };
-    private View.OnClickListener onHealth = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(getApplicationContext(), Health.class);
-            startActivity(intent);
-            finish();
 
-        }
-    };
     private View.OnClickListener onGoals = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -364,4 +407,9 @@ public class Home extends AppCompatActivity {
 
         }
     };
+    private void updateLocation(Double latitude,Double longitude){
+        ref= FirebaseDatabase.getInstance().getReference("users/"+ mAuth.getCurrentUser().getUid()+"/location");
+        GPSHelper gpsHelper=new GPSHelper(latitude,longitude);
+        ref.setValue(gpsHelper);
+    }
 }

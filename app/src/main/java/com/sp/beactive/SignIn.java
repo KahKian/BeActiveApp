@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.sp.beactive.Helpers.GPSHelper;
 import com.sp.beactive.Helpers.UserDetails;
 import com.sp.beactive.Homepage.Home;
 
@@ -38,7 +39,6 @@ public class SignIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_main);
 
-        ref=FirebaseDatabase.getInstance().getReference();
 
         mSignIn= findViewById(R.id.sign_in_button);
         mSignOut= findViewById(R.id.sign_out_button);
@@ -94,17 +94,18 @@ public class SignIn extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists())
                         {
-                            Toast.makeText(SignIn.this,"user already exists",Toast.LENGTH_LONG).show();
+                            Toast.makeText(SignIn.this,"Welcome Back!",Toast.LENGTH_SHORT).show();
                             startActivity(intent);
                             finish();
 
                         }
                         else
                         {
-
+                            GPSHelper gpsHelper = new GPSHelper();
                             UserDetails userDetails = new UserDetails();
                             ref.child("profile").setValue(userDetails);
-                            Toast.makeText(SignIn.this,"create new",Toast.LENGTH_LONG).show();
+                            ref.child("location").setValue(gpsHelper);
+                            Toast.makeText(SignIn.this,"Hello New User!",Toast.LENGTH_SHORT).show();
                             startActivity(intent);
                             finish();
                         }
@@ -140,6 +141,9 @@ public class SignIn extends AppCompatActivity {
                     }
                 });
         Toast.makeText(SignIn.this,"User has been signed out",Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(SignIn.this, CloseActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
         // [END auth_fui_signout]
     }
 

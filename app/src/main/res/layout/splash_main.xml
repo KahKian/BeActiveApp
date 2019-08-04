@@ -59,7 +59,7 @@
                 android:fontFamily="sans-serif-condensed-medium"
                 android:gravity="center|center_horizontal|center_vertical"
                 android:text="Be Active!"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@android:color/holo_red_dark"
                 android:textSize="70sp" />
         </RelativeLayout>
 

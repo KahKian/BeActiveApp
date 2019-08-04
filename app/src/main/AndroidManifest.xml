@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:http="http://schemas.android.com/apk/distribution"
     package="com.sp.beactive">
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -18,8 +17,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -28,7 +27,12 @@
         android:roundIcon="@mipmap/htp_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".CloseActivity"></activity>
 
+        <service
+            android:name=".Services.GPSTracker"
+            android:enabled="false"
+            android:exported="false" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -43,13 +47,12 @@
 
         <activity
             android:name=".Homepage.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
         <activity
             android:name=".SignIn"
             android:theme="@style/AppTheme.Splash" />
         <activity android:name=".Homepage.Community" />
         <activity android:name=".Homepage.Goals" />
-        <activity android:name=".Homepage.Health" />
         <activity android:name=".Homepage.Learning" />
         <activity android:name=".Homepage.Profile" />
         <activity

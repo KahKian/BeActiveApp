@@ -1,6 +1,5 @@
 package com.sp.beactive.Helpers;
 
-import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties

@@ -19,7 +19,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/sign_in_background">
 
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/Profile_Thumbnail"
@@ -31,6 +32,14 @@
                 android:src="@drawable/htp"
                 app:civ_border_color="#FF000000"
                 app:civ_border_width="2dp" />
+            <Button
+                android:id="@+id/setProfile_Thumbnail"
+                android:layout_width="107dp"
+                android:layout_height="97dp"
+                android:layout_alignBottom="@+id/Profile_Thumbnail"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="-1dp"
+                android:background="@android:color/transparent" />
 
             <TextView
                 android:id="@+id/textView"
@@ -42,7 +51,7 @@
                 android:layout_marginTop="148dp"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="What's your name?"
-                android:textColor="@android:color/holo_red_light"
+                android:textColor="@android:color/black"
                 android:textSize="30sp" />
 
 
@@ -69,7 +78,7 @@
                 android:layout_marginStart="0dp"
                 android:layout_marginTop="245dp"
                 android:text="How old are you?"
-                android:textColor="@android:color/holo_red_light"
+                android:textColor="@android:color/black"
                 android:textSize="30sp" />
 
             <EditText

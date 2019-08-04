@@ -39,6 +39,12 @@
                             android:layout_height="match_parent">
 
 
+                            <Button
+                                android:id="@+id/testgps"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="testgps" />
+
                             <ImageButton
                                 android:id="@+id/popup_menu"
                                 android:layout_width="wrap_content"
@@ -202,13 +208,13 @@
                                         android:layout_width="50dp"
                                         android:id="@+id/imageView3"
                                         android:layout_height="50dp"
-                                        android:src="@drawable/health"
+                                        android:src="@drawable/community"
                                         android:layout_centerInParent="true"
                                         />
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="HEALTH"
+                                        android:text="COMMUNITY"
                                         android:textSize="16sp"
                                         android:layout_below="@+id/imageView3"
                                         android:layout_centerHorizontal="true"
@@ -218,7 +224,7 @@
                                     <Button
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
-                                        android:id="@+id/buttonHealth"
+                                        android:id="@+id/buttonCommunity"
                                         android:background="@android:color/transparent"
                                         />
 
@@ -272,43 +278,7 @@
                             android:orientation="horizontal"
                             android:layout_marginBottom="10dp"
                             >
-                            <androidx.cardview.widget.CardView
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:layout_marginRight="5dp"
-                                android:orientation="vertical">
 
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent">
-                                    <ImageView
-                                        android:layout_width="50dp"
-                                        android:id="@+id/imageView5"
-                                        android:layout_height="50dp"
-                                        android:src="@drawable/community"
-                                        android:layout_centerInParent="true"
-                                        />
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="COMMUNITY"
-                                        android:textSize="16sp"
-                                        android:layout_below="@+id/imageView5"
-                                        android:layout_centerHorizontal="true"
-                                        android:layout_marginTop="10dp"
-                                        android:layout_marginBottom="10dp"
-                                        />
-                                    <Button
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:id="@+id/buttonCommunity"
-                                        android:background="@android:color/transparent"
-                                        />
-
-                                </RelativeLayout>
-                            </androidx.cardview.widget.CardView>
                             <androidx.cardview.widget.CardView
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
