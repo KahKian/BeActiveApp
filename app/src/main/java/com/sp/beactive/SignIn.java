@@ -83,12 +83,10 @@ public class SignIn extends AppCompatActivity {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
-                // Successfully signed in
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 final Intent intent = new Intent(this, Home.class);
                 assert user.getUid() !=null;
                 ref = FirebaseDatabase.getInstance().getReference("users/"+user.getUid());
-
                 final ValueEventListener mDetailsListener = new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -97,7 +95,6 @@ public class SignIn extends AppCompatActivity {
                             Toast.makeText(SignIn.this,"Welcome Back!",Toast.LENGTH_SHORT).show();
                             startActivity(intent);
                             finish();
-
                         }
                         else
                         {
@@ -110,17 +107,15 @@ public class SignIn extends AppCompatActivity {
                             finish();
                         }
                     }
-
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
                         Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                        Toast.makeText(SignIn.this, "Failed to load post.",
+                        Toast.makeText(SignIn.this, "Oops",
                                 Toast.LENGTH_SHORT).show();
                     }
                 };
-                ref.addValueEventListener(mDetailsListener);
-
+                ref.addListenerForSingleValueEvent(mDetailsListener);
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check

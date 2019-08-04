@@ -6,4 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".Homepage.Learning">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="35dp"
+        tools:layout_editor_absoluteY="78dp">
+
+        <Button
+            android:id="@+id/test_json"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="testing_json" />
+
+        <TextView
+            android:id="@+id/json_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/test_json">
+        </TextView>
+    </RelativeLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -51,6 +51,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 
 public class Home extends AppCompatActivity {
@@ -249,7 +250,7 @@ public class Home extends AppCompatActivity {
                 }
             }
         } else if (requestCode == CAMERA){
-            Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+            Bitmap imageBitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
             mThumbnail.setImageBitmap(imageBitmap);
             saveToTemp(imageBitmap);
             saveImage(imageBitmap);
@@ -311,6 +312,7 @@ public class Home extends AppCompatActivity {
 
         } finally {
             try {
+                assert fos != null;
                 fos.close();
 
             } catch (IOException e) {
@@ -408,7 +410,7 @@ public class Home extends AppCompatActivity {
         }
     };
     private void updateLocation(Double latitude,Double longitude){
-        ref= FirebaseDatabase.getInstance().getReference("users/"+ mAuth.getCurrentUser().getUid()+"/location");
+        ref= FirebaseDatabase.getInstance().getReference("users/"+ Objects.requireNonNull(mAuth.getCurrentUser()).getUid()+"/location");
         GPSHelper gpsHelper=new GPSHelper(latitude,longitude);
         ref.setValue(gpsHelper);
     }

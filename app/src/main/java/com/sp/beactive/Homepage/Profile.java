@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Objects;
 
 
 public class Profile extends AppCompatActivity {
@@ -71,7 +72,7 @@ public class Profile extends AppCompatActivity {
         mSave.setOnClickListener(onSave);
         mProfile_Thumbnail= findViewById(R.id.Profile_Thumbnail);
         setProfile = findViewById(R.id.setProfile_Thumbnail);
-        ref = FirebaseDatabase.getInstance().getReference("users/"+ mAuth.getCurrentUser().getUid()+"/profile");
+        ref = FirebaseDatabase.getInstance().getReference("users/"+ Objects.requireNonNull(mAuth.getCurrentUser()).getUid()+"/profile");
         ValueEventListener mDetailsListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -160,7 +161,7 @@ public class Profile extends AppCompatActivity {
                 }
             }
         } else if (requestCode == CAMERA){
-            Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+            Bitmap imageBitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
             mProfile_Thumbnail.setImageBitmap(imageBitmap);
             saveToTemp(imageBitmap);
             saveImage(imageBitmap);
@@ -222,6 +223,7 @@ public class Profile extends AppCompatActivity {
 
         } finally {
             try {
+                assert fos != null;
                 fos.close();
 
             } catch (IOException e) {
