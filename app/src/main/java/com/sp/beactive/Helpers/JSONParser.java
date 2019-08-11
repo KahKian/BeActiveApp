@@ -2,7 +2,8 @@ package com.sp.beactive.Helpers;
 
 import android.os.AsyncTask;
 
-import com.sp.beactive.Homepage.Learning;
+
+import com.sp.beactive.testjsonactivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +27,8 @@ public class JSONParser extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... voids) {
         //This is Background Thread
         try {
-            URL url = new URL("https://api.myjson.com/bins/1a21lx");
+            URL url = new URL("https://api.myjson.com/bins/15qvyl");
+            //URL url = new URL("http://localhost/MAD-BeActive/index.php");
             HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
             InputStream inputStream = httpsURLConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -37,18 +39,24 @@ public class JSONParser extends AsyncTask<Void, Void, Void> {
                 data = data + line;
         }
 
-            JSONArray JA = new JSONArray(data);
-            for (int i=0; i<JA.length();i++){
-                JSONObject JO = (JSONObject) JA.get(i);
-                //You could use List View
-                singleParsed =  "Name: "+JO.get("name") + "\n"+
-                                "Age: "+JO.get("age") + "\n"+
-                                "Location: "+JO.get("location") + "\n";
 
+        JSONArray JA = new JSONArray(data);
+            for (int i=0; i<JA.length();i++){
+                JSONObject jsonObject = JA.getJSONObject(i);
+                //You could use List View
+                //singleParsed =  "Geometry: "+jsonObject.get("geometry") +"\n";
+                String name = jsonObject.getString("stadium");
+                String lat = jsonObject.getString("lat");
+                String lng = jsonObject.getString("lng");
+                singleParsed = "Stadium: "+name+"\n"+
+                                "Lat: "+lat+"\n"+
+                                "Lng: "+lng+"\n";
                 dataParsed = dataParsed+singleParsed+"\n";
             }
 
         } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,6 +72,6 @@ public class JSONParser extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(aVoid);
         //This is UI Thread
 
-        Learning.textView.setText(dataParsed);
+        testjsonactivity.textView.setText(dataParsed);
     }
 }

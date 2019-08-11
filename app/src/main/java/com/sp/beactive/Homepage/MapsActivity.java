@@ -1,5 +1,6 @@
 package com.sp.beactive.Homepage;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
@@ -25,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.sp.beactive.Helpers.GPSHelper;
 import com.sp.beactive.Helpers.UserDetails;
 import com.sp.beactive.R;
+import com.sp.beactive.Services.GPSTracker;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -35,32 +37,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng ME;
     private DatabaseReference ref;
     private FirebaseAuth mAuth;
+    private ValueEventListener mDetailsListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity_maps);
+
         mAuth = FirebaseAuth.getInstance();
         ref = FirebaseDatabase.getInstance().getReference("users/"+ mAuth.getCurrentUser().getUid()+"/location");
-        ValueEventListener mDetailsListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                GPSHelper gpsHelper = dataSnapshot.getValue(GPSHelper.class);
-                assert gpsHelper!=null;
-                myLat=gpsHelper.lat;
-                myLon=gpsHelper.lon;
-            }
+            mDetailsListener = ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    GPSHelper gpsHelper = dataSnapshot.getValue(GPSHelper.class);
+                    assert gpsHelper!=null;
+                    myLat=gpsHelper.lat;
+                    myLon=gpsHelper.lon;
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                Toast.makeText(MapsActivity.this, "Failed to load post.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        };
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                    Toast.makeText(MapsActivity.this, "Failed to load post.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
         ref.addValueEventListener(mDetailsListener);
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -88,13 +90,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
 
-        ME = new LatLng(myLat,myLon);
+
+        ME = new LatLng(myLon,myLat);
         Marker me = mMap.addMarker(new MarkerOptions().position(ME).title("ME")
         .snippet("My location")
         .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_me)));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ME, 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ME, 4));
         // Add a marker in Sydney and move the camera
         //LatLng sydney = new LatLng(-34, 151);
         //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -107,5 +111,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = new Intent(this, Home.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ref.removeEventListener(mDetailsListener);
     }
 }

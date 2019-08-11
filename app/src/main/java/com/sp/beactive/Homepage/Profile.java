@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +33,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.sp.beactive.BuildConfig;
+import com.sp.beactive.Helpers.PhotoUpload;
 import com.sp.beactive.R;
 import com.sp.beactive.Helpers.UserDetails;
 
@@ -41,6 +45,8 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
 
+import static android.widget.Toast.LENGTH_LONG;
+
 
 public class Profile extends AppCompatActivity {
     private static final String TAG = "Profile";
@@ -48,34 +54,41 @@ public class Profile extends AppCompatActivity {
     private int CAMERA=1, GALLERY = 2;
     public EditText mName2;
     Button mSave;
+    Button mDiscard;
     private EditText mAge;
     private ImageView mProfile_Thumbnail;
     Button setProfile;
     SharedPreferences sharedPreferences;
+    private ValueEventListener mDetailsListener;
+    private ValueEventListener mPhotoListener;
     public static final String mypreferences = "mypref";
     public static final String file = "fileKey";
-    private DatabaseReference ref;
+    private DatabaseReference profile_ref;
+    private DatabaseReference photo_ref;
     private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_main);
 
-
-        ref=FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-
+        String uid= Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         sharedPreferences=getSharedPreferences(mypreferences,Context.MODE_PRIVATE);
         mSave = findViewById(R.id.Save);
+        mDiscard = findViewById(R.id.Discard);
         mName2 = findViewById(R.id.Name2);
         mAge = findViewById(R.id.Age);
         mSave.setOnClickListener(onSave);
+        mDiscard.setOnClickListener(onDiscard);
         mProfile_Thumbnail= findViewById(R.id.Profile_Thumbnail);
         setProfile = findViewById(R.id.setProfile_Thumbnail);
-        ref = FirebaseDatabase.getInstance().getReference("users/"+ Objects.requireNonNull(mAuth.getCurrentUser()).getUid()+"/profile");
-        ValueEventListener mDetailsListener = new ValueEventListener() {
+        profile_ref = FirebaseDatabase.getInstance().getReference("users/"+uid+"/profile");
+        photo_ref = FirebaseDatabase.getInstance().getReference("users/"+uid+"/photo");
+
+        //GET NAME/AGE FROM FIREBASE
+        mDetailsListener= profile_ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserDetails userDetails = dataSnapshot.getValue(UserDetails.class);
                 assert userDetails!=null;
                 mName2 = findViewById(R.id.Name2);
@@ -84,20 +97,36 @@ public class Profile extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
                 Toast.makeText(Profile.this, "Failed to load post.",
                         Toast.LENGTH_SHORT).show();
             }
-        };
-        ref.addValueEventListener(mDetailsListener);
+        });
+        profile_ref.addValueEventListener(mDetailsListener);
 
-        File imgFile = new File(this.sharedPreferences.getString(file,""));
-        if(imgFile.exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getPath());
-            mProfile_Thumbnail.setImageBitmap(myBitmap);
-        }
+        //GET FILEPATH FOR PHOTO FROM FIREBASE
+        mPhotoListener= photo_ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                PhotoUpload photoUpload = dataSnapshot.getValue(PhotoUpload.class);
+                assert photoUpload!=null;
+                File imgFile = new File(photoUpload.filepath);
+                if(imgFile.exists()){
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getPath());
+                    mProfile_Thumbnail.setImageBitmap(myBitmap);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                Toast.makeText(Profile.this, "Failed to load post.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+        photo_ref.addValueEventListener(mPhotoListener);
         setProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -209,8 +238,7 @@ public class Profile extends AppCompatActivity {
         try {
             fos = new FileOutputStream(mypath);
             // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 90, fos);
             String m = mypath.toString();
             sharedPreferences=getApplicationContext().getSharedPreferences(mypreferences,Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -236,21 +264,51 @@ public class Profile extends AppCompatActivity {
     public View.OnClickListener onSave = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-           final Intent intent = new Intent(Profile.this, Home.class);
+
+            String imgFile = (sharedPreferences.getString(file, ""));
+            final Intent intent = new Intent(Profile.this, Home.class);
             String profile_name;
             profile_name=mName2.getText().toString();
             String profile_age;
             profile_age=mAge.getText().toString();
-
+            updatePhoto(imgFile);
             updateDetails(profile_name, profile_age);
             startActivity(intent);
             finish();
         }
     };
 
+    public View.OnClickListener onDiscard = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(Profile.this);
+            alertDialog.setTitle("UNSAVED CHANGES");
+            alertDialog.setMessage("You have unsaved changes, are you sure you want to leave?");
+            alertDialog.setPositiveButton("Discard Changes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(getApplicationContext(),Home.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+            alertDialog.setNegativeButton("Go Back", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            alertDialog.show();
+        }
+
+    };
+
     private void updateDetails(String name,String age){
             UserDetails userDetails=new UserDetails(name,age);
-            ref.setValue(userDetails);
+            profile_ref.setValue(userDetails);
+    }
+
+    private void updatePhoto(String path){
+        PhotoUpload photoUpload = new PhotoUpload(path);
+        photo_ref.setValue(photoUpload);
     }
 
 
@@ -260,5 +318,12 @@ public class Profile extends AppCompatActivity {
         Intent intent = new Intent(this,Home.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        profile_ref.removeEventListener(mDetailsListener);
+        photo_ref.removeEventListener(mPhotoListener);
     }
 }

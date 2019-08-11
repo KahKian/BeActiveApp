@@ -115,7 +115,7 @@ public class GPSTracker extends Service implements LocationListener {
             showEnablePermissionAlert();
         }
     }
-
+//NOTE USE THIS STRUCTURE
     public void showEnablePermissionAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
         alertDialog.setTitle("Location Permissions Storage");

@@ -16,6 +16,7 @@ private long messageTime;
         this.messageText= messageText;
         this.messageUser= messageUser;
 
+
         messageTime = new Date().getTime();
 }
     public ChatMessage(){

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Homepage.Learning">
+    tools:context=".Homepage.More_Info">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,18 +12,10 @@
         tools:layout_editor_absoluteX="35dp"
         tools:layout_editor_absoluteY="78dp">
 
-        <Button
-            android:id="@+id/test_json"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="testing_json" />
-
-        <TextView
-            android:id="@+id/json_list"
+        <WebView
+            android:id="@+id/webview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/test_json">
-        </TextView>
+            android:layout_height="match_parent" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

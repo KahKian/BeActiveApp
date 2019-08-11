@@ -8,7 +8,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/sign_in_background">
 
         <ScrollView
             android:layout_width="fill_parent"
@@ -40,6 +41,14 @@
 
 
                             <Button
+                                android:id="@+id/test_json"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/popup_menu"
+                                android:layout_alignParentStart="true"
+                                android:text="testjson" />
+
+                            <Button
                                 android:id="@+id/testgps"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -57,24 +66,16 @@
                                 app:srcCompat="@android:drawable/ic_menu_manage" />
 
                             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                                android:id="@+id/Thumbnail"
-                                android:layout_width="96dp"
-                                android:layout_height="96dp"
+                                android:id="@+id/homeThumbnail"
+                                android:layout_width="189dp"
+                                android:layout_height="144dp"
                                 android:layout_alignParentTop="true"
                                 android:layout_centerHorizontal="true"
-                                android:layout_marginTop="26dp"
+                                android:layout_marginTop="10dp"
                                 android:src="@drawable/htp"
                                 app:civ_border_color="#FF000000"
                                 app:civ_border_width="2dp" />
 
-                            <Button
-                                android:id="@+id/setThumbnail"
-                                android:layout_width="107dp"
-                                android:layout_height="97dp"
-                                android:layout_alignBottom="@+id/Thumbnail"
-                                android:layout_centerHorizontal="true"
-                                android:layout_marginBottom="-1dp"
-                                android:background="@android:color/transparent" />
 
                             <TextView
                                 android:id="@+id/Name"
@@ -83,8 +84,10 @@
                                 android:layout_alignParentBottom="true"
                                 android:layout_centerHorizontal="true"
                                 android:layout_gravity="center"
-                                android:layout_marginBottom="68dp"
+                                android:layout_marginBottom="44dp"
                                 android:background="@android:drawable/screen_background_dark_transparent"
+                                android:maxLength="64"
+                                android:textAlignment="center"
                                 android:textColor="#ffffff"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
@@ -114,7 +117,8 @@
                                 android:layout_weight="1"
                                 android:gravity="center"
                                 android:layout_marginRight="5dp"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                app:cardCornerRadius="20dp">
 
                                 <RelativeLayout
                                     android:layout_width="match_parent"
@@ -151,7 +155,8 @@
                                 android:layout_weight="1"
                                 android:gravity="center"
                                 android:layout_marginLeft="5dp"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                app:cardCornerRadius="20dp">
 
                                 <RelativeLayout
                                     android:layout_width="match_parent"
@@ -166,7 +171,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="LEARNING"
+                                        android:text="MORE INFO"
                                         android:textSize="16sp"
                                         android:layout_below="@+id/imageView2"
                                         android:layout_centerHorizontal="true"
@@ -199,7 +204,8 @@
                                 android:layout_weight="1"
                                 android:gravity="center"
                                 android:layout_marginRight="5dp"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                app:cardCornerRadius="20dp">
 
                                 <RelativeLayout
                                     android:layout_width="match_parent"
@@ -236,7 +242,8 @@
                                 android:layout_weight="1"
                                 android:gravity="center"
                                 android:layout_marginLeft="5dp"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                app:cardCornerRadius="20dp">
 
                                 <RelativeLayout
                                     android:layout_width="match_parent"
@@ -285,7 +292,8 @@
                                 android:layout_weight="1"
                                 android:gravity="center"
                                 android:layout_marginLeft="5dp"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                app:cardCornerRadius="20dp">
 
                                 <RelativeLayout
                                     android:layout_width="match_parent"

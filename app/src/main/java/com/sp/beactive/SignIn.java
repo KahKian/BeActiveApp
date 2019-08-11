@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sp.beactive.Helpers.GPSHelper;
+import com.sp.beactive.Helpers.PhotoUpload;
 import com.sp.beactive.Helpers.UserDetails;
 import com.sp.beactive.Homepage.Home;
 
@@ -100,6 +101,8 @@ public class SignIn extends AppCompatActivity {
                         {
                             GPSHelper gpsHelper = new GPSHelper();
                             UserDetails userDetails = new UserDetails();
+                            PhotoUpload photoUpload = new PhotoUpload();
+                            ref.child("photo").setValue(photoUpload);
                             ref.child("profile").setValue(userDetails);
                             ref.child("location").setValue(gpsHelper);
                             Toast.makeText(SignIn.this,"Hello New User!",Toast.LENGTH_SHORT).show();
@@ -141,5 +144,17 @@ public class SignIn extends AppCompatActivity {
         startActivity(intent);
         // [END auth_fui_signout]
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        minimizeApp();
+    }
+    public void minimizeApp() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
+
 
 }

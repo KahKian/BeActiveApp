@@ -1,19 +1,11 @@
 package com.sp.beactive.Homepage;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.ContextWrapper;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,16 +32,14 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.sp.beactive.Helpers.GPSHelper;
+import com.sp.beactive.Helpers.PhotoUpload;
 import com.sp.beactive.R;
 import com.sp.beactive.Services.GPSTracker;
 import com.sp.beactive.SignIn;
 import com.sp.beactive.Helpers.UserDetails;
+import com.sp.beactive.testjsonactivity;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,16 +48,15 @@ public class Home extends AppCompatActivity {
 
 
 
-    private int CAMERA=1, GALLERY = 2;
-    private ImageView mThumbnail;
+
     public TextView mName;
     public static final String TAG = "Home";
-    private DatabaseReference ref;
+    private DatabaseReference profile_ref;
+    private DatabaseReference photo_ref;
+    private DatabaseReference gps_ref;
     private FirebaseAuth mAuth;
-    private SharedPreferences sharedPreferences;
-    public static final String mypreferences = "mypref";
-    public static final String file = "fileKey";
-    private static final String IMAGE_DIRECTORY = "/beactive";
+    private ValueEventListener mDetailsListener;
+    private ValueEventListener mPhotoListener;
 
     private GPSTracker gpsTracker;
     private double latitude = 0.0d;
@@ -85,9 +74,17 @@ public class Home extends AppCompatActivity {
         Button buttonGoals;
         Button buttonCommunity;
         Button buttonMap;
-        Button mSetThumbnail;
-        ImageButton btn;
+        ImageButton signout_btn;
         Button testgps;
+        Button testjson;
+        testjson = findViewById(R.id.test_json);
+        testjson.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent jsonintent = new Intent(getApplicationContext(), testjsonactivity.class);
+                startActivity(jsonintent);
+            }
+        });
         testgps = findViewById(R.id.testgps);
         testgps.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,23 +93,17 @@ public class Home extends AppCompatActivity {
                 longitude=gpsTracker.getLongitude();
                 updateLocation(latitude,longitude);
                 Toast.makeText(getApplicationContext(),"Your Location is - \nLat: "+latitude+ "\nLong: " +longitude, Toast.LENGTH_LONG).show();
+
             }
         });
-
-        ref=FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+        profile_ref = FirebaseDatabase.getInstance().getReference("users/"+ uid+"/profile");
+        photo_ref = FirebaseDatabase.getInstance().getReference("users/"+ uid+"/photo");
+        gps_ref= FirebaseDatabase.getInstance().getReference("users/"+ uid+"/location");
+
+
         gpsTracker = new GPSTracker(Home.this);
-
-
-
-        sharedPreferences = getSharedPreferences(mypreferences, Context.MODE_PRIVATE);
-        mThumbnail = findViewById(R.id.Thumbnail);
-        File imgFile = new File(this.sharedPreferences.getString(file,""));
-        if(imgFile.exists()){
-
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getPath());
-            mThumbnail.setImageBitmap(myBitmap);
-        }
 
         mName = findViewById(R.id.Name);
         buttonProfile = findViewById(R.id.buttonProfile);
@@ -120,8 +111,7 @@ public class Home extends AppCompatActivity {
         buttonGoals = findViewById(R.id.buttonGoals);
         buttonCommunity = findViewById(R.id.buttonCommunity);
         buttonMap = findViewById(R.id.buttonMap);
-        btn = findViewById(R.id.popup_menu);
-        mSetThumbnail = findViewById(R.id.setThumbnail);
+        signout_btn = findViewById(R.id.popup_menu);
 
         buttonProfile.setOnClickListener(onProfile);
         buttonLearning.setOnClickListener(onLearning);
@@ -131,14 +121,7 @@ public class Home extends AppCompatActivity {
 
         requestMultiplePermissions();
 
-
-        mSetThumbnail.setOnClickListener(  new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPictureDialog();
-            }
-        });
-        btn.setOnClickListener(new View.OnClickListener() {
+        signout_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PopupMenu popup = new PopupMenu(Home.this, v);
@@ -152,6 +135,20 @@ public class Home extends AppCompatActivity {
                                 Intent intent = new Intent(getApplicationContext(), SignIn.class);
                                 startActivity(intent);
                                 return true;
+
+                            case  R.id.reset_acc:
+                                String name = "";
+                                String age = "";
+                                String photopath = "";
+                                UserDetails resetDetails = new UserDetails(name,age);
+                                PhotoUpload resetPhoto = new PhotoUpload(photopath);
+                                profile_ref.setValue(resetDetails);
+                                photo_ref.setValue(resetPhoto);
+                                gps_ref.setValue("");
+                                Intent reset_intent = new Intent(getApplicationContext(), SignIn.class);
+                                startActivity(reset_intent);
+                                return true;
+
                             default:
                                 return false;
                         }
@@ -166,10 +163,9 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onStart(){
         super.onStart();
-        ref = FirebaseDatabase.getInstance().getReference("users/"+ mAuth.getCurrentUser().getUid()+"/profile");
-        ValueEventListener mDetailsListener = new ValueEventListener() {
+        mDetailsListener=profile_ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserDetails userDetails = dataSnapshot.getValue(UserDetails.class);
                 assert userDetails!=null;
                 mName = findViewById(R.id.Name);
@@ -184,145 +180,38 @@ public class Home extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
                 Toast.makeText(Home.this, "Failed to load post.",
                         Toast.LENGTH_SHORT).show();
             }
-        };
-        ref.addValueEventListener(mDetailsListener);
-    }
+        });
+        profile_ref.addValueEventListener(mDetailsListener);
 
-
-    private void showPictureDialog(){
-        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(this);
-        pictureDialog.setTitle("Select Action");
-        String[] pictureDialogItems = {
-                "Select photo from gallery",
-                "Capture photo from camera" };
-        pictureDialog.setItems(pictureDialogItems,
-                new DialogInterface.OnClickListener(){
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                choosePhotoFromGallery();
-                                break;
-                            case 1:
-                                takePicture();
-                                break;
-                        }
-                    }
-                });
-        pictureDialog.show();
-    }
-
-    public void choosePhotoFromGallery() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-        startActivityForResult(galleryIntent, GALLERY);
-    }
-
-    private void takePicture() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(takePictureIntent, CAMERA);
-
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
-        if(resultCode==this.RESULT_CANCELED) {
-            return;
-        }
-        if (requestCode == GALLERY) {
-            if(data != null){
-                Uri contentURI = data.getData();
-                try{
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                    saveToTemp(bitmap);
-                    Toast.makeText(Home.this, "Image Saved!", Toast.LENGTH_SHORT).show();
-                    mThumbnail.setImageBitmap(bitmap);
-                } catch (IOException e){
-                    e.printStackTrace();
-                    Toast.makeText(Home.this, "Failed!", Toast.LENGTH_SHORT).show();
+        mPhotoListener= photo_ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                PhotoUpload photoUpload = dataSnapshot.getValue(PhotoUpload.class);
+                assert photoUpload!=null;
+                File imgFile = new File(photoUpload.filepath);
+                if(imgFile.exists()){
+                    ImageView mThumbnail;
+                    mThumbnail = findViewById(R.id.homeThumbnail);
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getPath());
+                    mThumbnail.setImageBitmap(myBitmap);
                 }
+
             }
-        } else if (requestCode == CAMERA){
-            Bitmap imageBitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
-            mThumbnail.setImageBitmap(imageBitmap);
-            saveToTemp(imageBitmap);
-            saveImage(imageBitmap);
-            Toast.makeText(Home.this, "Image Saved!", Toast.LENGTH_SHORT).show();
 
-        }
-    }
-
-    public String saveImage(Bitmap myBitmap) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        myBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        File wallpaperDirectory = new File(
-                Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
-        // have the object build the directory structure, if needed.
-        if (!wallpaperDirectory.exists()) {
-            wallpaperDirectory.mkdirs();
-        }
-
-        try {
-            File f = new File(wallpaperDirectory, Calendar.getInstance()
-                    .getTimeInMillis() + ".jpg");
-            f.createNewFile();
-            FileOutputStream fo = new FileOutputStream(f);
-            fo.write(bytes.toByteArray());
-            MediaScannerConnection.scanFile(this,
-                    new String[]{f.getPath()},
-                    new String[]{"image/jpeg"}, null);
-            fo.close();
-            Log.d("TAG", "File Saved::--->" + f.getAbsolutePath());
-
-            return f.getAbsolutePath();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        return "";
-    }
-
-    private String saveToTemp(Bitmap bitmapImage){
-        ContextWrapper cw = new ContextWrapper(getApplicationContext());
-        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-        // Create imageDir
-        File mypath=new File(directory,"profile.jpg");
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(mypath);
-            // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-
-            String m = mypath.toString();
-            sharedPreferences=getApplicationContext().getSharedPreferences(mypreferences,Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(file, m);
-            editor.apply();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        } finally {
-            try {
-                assert fos != null;
-                fos.close();
-
-            } catch (IOException e) {
-                e.printStackTrace();
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                Toast.makeText(Home.this, "Failed to load post.",
+                        Toast.LENGTH_SHORT).show();
             }
-        }
-        return directory.getAbsolutePath();
+        });
+        photo_ref.addValueEventListener(mPhotoListener);
     }
-
-
 
     private void  requestMultiplePermissions(){
         Dexter.withActivity(this)
@@ -330,8 +219,6 @@ public class Home extends AppCompatActivity {
                         Manifest.permission.CAMERA,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.INTERNET)
                 .withListener(new MultiplePermissionsListener() {
                     @Override
@@ -375,7 +262,7 @@ public class Home extends AppCompatActivity {
     private View.OnClickListener onLearning = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(getApplicationContext(), Learning.class);
+            Intent intent = new Intent(getApplicationContext(), More_Info.class);
             startActivity(intent);
             finish();
 
@@ -410,8 +297,27 @@ public class Home extends AppCompatActivity {
         }
     };
     private void updateLocation(Double latitude,Double longitude){
-        ref= FirebaseDatabase.getInstance().getReference("users/"+ Objects.requireNonNull(mAuth.getCurrentUser()).getUid()+"/location");
-        GPSHelper gpsHelper=new GPSHelper(latitude,longitude);
-        ref.setValue(gpsHelper);
+
+        GPSHelper gpsHelper =new GPSHelper(latitude,longitude);
+        gps_ref.setValue(gpsHelper);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        profile_ref.removeEventListener(mDetailsListener);
+        photo_ref.removeEventListener(mPhotoListener);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        minimizeApp();
+    }
+    public void minimizeApp() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
     }
 }
