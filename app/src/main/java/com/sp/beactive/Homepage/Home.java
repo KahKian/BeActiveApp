@@ -31,13 +31,12 @@ import com.karumi.dexter.listener.DexterError;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.sp.beactive.Helpers.GPSHelper;
 import com.sp.beactive.Helpers.PhotoUpload;
+import com.sp.beactive.OneTimeAlertDialog;
 import com.sp.beactive.R;
 import com.sp.beactive.Services.GPSTracker;
 import com.sp.beactive.SignIn;
 import com.sp.beactive.Helpers.UserDetails;
-import com.sp.beactive.testjsonactivity;
 
 import java.io.File;
 import java.util.List;
@@ -53,14 +52,11 @@ public class Home extends AppCompatActivity {
     public static final String TAG = "Home";
     private DatabaseReference profile_ref;
     private DatabaseReference photo_ref;
-    private DatabaseReference gps_ref;
+
     private FirebaseAuth mAuth;
     private ValueEventListener mDetailsListener;
     private ValueEventListener mPhotoListener;
 
-    private GPSTracker gpsTracker;
-    private double latitude = 0.0d;
-    private double longitude = 0.0d;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,53 +65,36 @@ public class Home extends AppCompatActivity {
         setContentView(R.layout.home_main);
 
 
-        Button buttonProfile;
-        Button buttonLearning;
-        Button buttonGoals;
-        Button buttonCommunity;
-        Button buttonMap;
-        ImageButton signout_btn;
-        Button testgps;
-        Button testjson;
-        testjson = findViewById(R.id.test_json);
-        testjson.setOnClickListener(new View.OnClickListener() {
+        Button stadiums;
+        stadiums = findViewById(R.id.Stadiums);
+        stadiums.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent jsonintent = new Intent(getApplicationContext(), testjsonactivity.class);
+                Intent jsonintent = new Intent(getApplicationContext(), Select_Stadium.class);
                 startActivity(jsonintent);
             }
         });
-        testgps = findViewById(R.id.testgps);
-        testgps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                latitude=gpsTracker.getLatitude();
-                longitude=gpsTracker.getLongitude();
-                updateLocation(latitude,longitude);
-                Toast.makeText(getApplicationContext(),"Your Location is - \nLat: "+latitude+ "\nLong: " +longitude, Toast.LENGTH_LONG).show();
 
-            }
-        });
         mAuth = FirebaseAuth.getInstance();
         String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         profile_ref = FirebaseDatabase.getInstance().getReference("users/"+ uid+"/profile");
         photo_ref = FirebaseDatabase.getInstance().getReference("users/"+ uid+"/photo");
-        gps_ref= FirebaseDatabase.getInstance().getReference("users/"+ uid+"/location");
 
 
-        gpsTracker = new GPSTracker(Home.this);
+
+
 
         mName = findViewById(R.id.Name);
-        buttonProfile = findViewById(R.id.buttonProfile);
-        buttonLearning = findViewById(R.id.buttonLearning);
-        buttonGoals = findViewById(R.id.buttonGoals);
-        buttonCommunity = findViewById(R.id.buttonCommunity);
-        buttonMap = findViewById(R.id.buttonMap);
-        signout_btn = findViewById(R.id.popup_menu);
+        Button buttonProfile = findViewById(R.id.buttonProfile);
+        Button buttonInfo = findViewById(R.id.buttonInfo);
+        Button buttonReminders = findViewById(R.id.buttonReminders);
+        Button buttonCommunity = findViewById(R.id.buttonCommunity);
+        Button buttonMap = findViewById(R.id.buttonMap);
+        ImageButton signout_btn = findViewById(R.id.popup_menu);
 
         buttonProfile.setOnClickListener(onProfile);
-        buttonLearning.setOnClickListener(onLearning);
-        buttonGoals.setOnClickListener(onGoals);
+        buttonInfo.setOnClickListener(onLearning);
+        buttonReminders.setOnClickListener(onReminders);
         buttonCommunity.setOnClickListener(onCommunity);
         buttonMap.setOnClickListener(onMap);
 
@@ -144,7 +123,6 @@ public class Home extends AppCompatActivity {
                                 PhotoUpload resetPhoto = new PhotoUpload(photopath);
                                 profile_ref.setValue(resetDetails);
                                 photo_ref.setValue(resetPhoto);
-                                gps_ref.setValue("");
                                 Intent reset_intent = new Intent(getApplicationContext(), SignIn.class);
                                 startActivity(reset_intent);
                                 return true;
@@ -157,6 +135,10 @@ public class Home extends AppCompatActivity {
                 popup.show();
             }
         });
+        new OneTimeAlertDialog.Builder(Home.this, "homepage_dialog")
+                .setTitle("Welcome!")
+                .setMessage("Please head towards the Profile to set up your particulars")
+                .show();
 
     }
 
@@ -172,6 +154,7 @@ public class Home extends AppCompatActivity {
                 if(userDetails.username.equals(""))
                 {
                     mName.setText("Hello first time user,\n please go to Profile!");
+
                 }
                 else
                 {
@@ -225,7 +208,7 @@ public class Home extends AppCompatActivity {
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
 
                         if (report.areAllPermissionsGranted()) {
-                            //Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
                         }
 
 
@@ -269,10 +252,10 @@ public class Home extends AppCompatActivity {
         }
     };
 
-    private View.OnClickListener onGoals = new View.OnClickListener() {
+    private View.OnClickListener onReminders = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(getApplicationContext(), Goals.class);
+            Intent intent = new Intent(getApplicationContext(), Reminders.class);
             startActivity(intent);
             finish();
 
@@ -290,17 +273,12 @@ public class Home extends AppCompatActivity {
     private View.OnClickListener onMap = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+            Intent intent = new Intent(getApplicationContext(), Stadium_Map.class);
             startActivity(intent);
             finish();
 
         }
     };
-    private void updateLocation(Double latitude,Double longitude){
-
-        GPSHelper gpsHelper =new GPSHelper(latitude,longitude);
-        gps_ref.setValue(gpsHelper);
-    }
 
     @Override
     protected void onStop() {

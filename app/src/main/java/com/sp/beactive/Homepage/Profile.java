@@ -33,7 +33,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.sp.beactive.BuildConfig;
 import com.sp.beactive.Helpers.PhotoUpload;
 import com.sp.beactive.R;
 import com.sp.beactive.Helpers.UserDetails;
@@ -282,9 +281,9 @@ public class Profile extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(Profile.this);
-            alertDialog.setTitle("UNSAVED CHANGES");
-            alertDialog.setMessage("You have unsaved changes, are you sure you want to leave?");
-            alertDialog.setPositiveButton("Discard Changes", new DialogInterface.OnClickListener() {
+            alertDialog.setTitle("DISCARDING CHANGES");
+            alertDialog.setMessage("You are discarding all changes, are you sure you want to leave?");
+            alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     Intent intent = new Intent(getApplicationContext(),Home.class);
                     startActivity(intent);

@@ -99,12 +99,11 @@ public class SignIn extends AppCompatActivity {
                         }
                         else
                         {
-                            GPSHelper gpsHelper = new GPSHelper();
+
                             UserDetails userDetails = new UserDetails();
                             PhotoUpload photoUpload = new PhotoUpload();
                             ref.child("photo").setValue(photoUpload);
                             ref.child("profile").setValue(userDetails);
-                            ref.child("location").setValue(gpsHelper);
                             Toast.makeText(SignIn.this,"Hello New User!",Toast.LENGTH_SHORT).show();
                             startActivity(intent);
                             finish();

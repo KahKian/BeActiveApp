@@ -28,7 +28,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".testjsonactivity"
+            android:name=".Homepage.Select_Stadium"
             android:theme="@style/AppTheme.Splash"/>
         <activity android:name=".CloseActivity" />
 
@@ -50,7 +50,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".Homepage.MapsActivity"
+            android:name=".Homepage.Stadium_Map"
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".SignIn"
@@ -59,7 +59,7 @@
             android:name=".Homepage.Community"
             android:theme="@style/AppTheme.Splash" />
         <activity
-            android:name=".Homepage.Goals"
+            android:name=".Homepage.Reminders"
             android:theme="@style/AppTheme.Splash" />
         <activity
             android:name=".Homepage.More_Info"

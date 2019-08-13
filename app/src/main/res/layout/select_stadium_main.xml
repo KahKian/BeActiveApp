@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Homepage.More_Info">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/sign_in_background"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+        <Button
+            android:id="@+id/select"
+            android:layout_width="332dp"
+            android:layout_height="219dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="35dp"
+            android:background="@drawable/signin_btn"
+            android:text="Select Stadium" />
+
+        <TextView
+            android:id="@+id/json_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/select"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="93dp"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"></TextView>
+
+        <TextView
+            android:id="@+id/json_lat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/json_name"
+            android:layout_alignStart="@+id/json_name"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="31dp"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/json_lon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/json_lat"
+            android:layout_alignStart="@+id/json_name"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/gotomap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="158dp"
+            android:layout_marginTop="516dp"
+            android:background="@drawable/signin_btn"
+            android:text="Go to Map" />
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

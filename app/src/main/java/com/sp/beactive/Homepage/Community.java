@@ -1,19 +1,19 @@
 package com.sp.beactive.Homepage;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,13 +27,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sp.beactive.Helpers.ChatMessage;
-import com.sp.beactive.Helpers.PhotoUpload;
+import com.sp.beactive.Helpers.RemindersHelper;
 import com.sp.beactive.Helpers.UserDetails;
+import com.sp.beactive.OneTimeAlertDialog;
 import com.sp.beactive.R;
-
-import org.w3c.dom.Text;
-
-import java.io.File;
 import java.util.Objects;
 
 public class Community extends AppCompatActivity {
@@ -45,9 +42,11 @@ public class Community extends AppCompatActivity {
     private FirebaseAuth mAuth;
     ListView listofMessages;
     private ValueEventListener nicknamelistener;
-    private ValueEventListener mPhotoListener;
     String age="";
     String nickname="";
+    String meetup="";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +57,10 @@ public class Community extends AppCompatActivity {
         final String uid= Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         final String name=mAuth.getCurrentUser().getDisplayName();
         databaseReference = FirebaseDatabase.getInstance().getReference("users/"+ uid+"/profile");
-
+        new OneTimeAlertDialog.Builder(this, "community_dialog")
+                .setTitle("Hey there")
+                .setMessage("This is the Community Chat, you can long press a message to save it to Reminders")
+                .show();
         //GET CHAT USERNAME FROM FIREBASE
         nicknamelistener=databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -90,12 +92,13 @@ public class Community extends AppCompatActivity {
 
             }
         });
+
+
     }
 
     private void displayChatMessages() {
 
         listofMessages = findViewById(R.id.list_of_messages);
-
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,
                 R.layout.message, ref) {
             @Override
@@ -112,9 +115,36 @@ public class Community extends AppCompatActivity {
             }
         };
         listofMessages.setAdapter(adapter);
+        registerForContextMenu(listofMessages);
+    }
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        getMenuInflater().inflate(R.menu.chatmenu, menu);
     }
 
-        @Override
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int pos = info.position;
+
+        switch (item.getItemId()){
+            case R.id.add_reminders:
+                ChatMessage chatMessage = (ChatMessage) listofMessages.getItemAtPosition(pos);
+                meetup = chatMessage.getMessageText();
+                Intent pass_to_reminders = new Intent(Community.this, Reminders.class);
+                pass_to_reminders.putExtra("meetup", meetup);
+                startActivity(pass_to_reminders);
+                Log.v("long clicked", "pos: " + pos);
+                return true;
+                default:
+                    return super.onContextItemSelected(item);
+        }
+
+    }
+
+    @Override
         public void onBackPressed(){
             super.onBackPressed();
             Intent intent = new Intent(this, Home.class);

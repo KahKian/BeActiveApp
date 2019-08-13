@@ -37,7 +37,7 @@ public class More_Info extends AppCompatActivity {
                     return super.shouldOverrideUrlLoading(view, request);
                 }
             });
-            webView.loadUrl("https://support.google.com/googleplay/?hl=en#topic=3364260");
+            webView.loadUrl("https://www.pa.gov.sg/our-programmes/active-ageing");
         }
         else {
             webView.setWebViewClient(new WebViewClient(){
@@ -47,7 +47,7 @@ public class More_Info extends AppCompatActivity {
                     return super.shouldOverrideUrlLoading(view, url);
                 }
             });
-            webView.loadUrl("https://support.google.com/googleplay/?hl=en#topic=3364260");
+            webView.loadUrl("https://www.pa.gov.sg/our-programmes/active-ageing");
         }
     }
 

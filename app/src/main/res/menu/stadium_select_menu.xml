@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Jurong West"
+        android:id="@+id/jw"/>
+    <item
+        android:id="@+id/je"
+        android:title="Jurong East" />
+    <item
+        android:id="@+id/clementi"
+        android:title="Clementi" />
+    <item
+        android:id="@+id/cck"
+        android:title="Chua Chu Kang" />
+    <item
+        android:id="@+id/jurong"
+        android:title="Jurong" />
+</menu>

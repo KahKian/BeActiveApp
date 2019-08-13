@@ -11,7 +11,7 @@ import java.io.ObjectOutputStream;
 
 import java.util.ArrayList;
 
-public class GoalsHelper {
+public class RemindersHelper {
 
     public static final String FILENAME = "listinfo.dat";
 
